@@ -32,26 +32,10 @@ class TaskTodayApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple,
-          brightness: Brightness.light,
-        ),
-        // Senior Tip: Set up modern tactical UI defaults
-        // cardTheme: CardTheme(
-        //   elevation: 0,
-        //   shape: RoundedRectangleBorder(
-        //     borderRadius: BorderRadius.circular(12),
-        //     side: BorderSide(color: Colors.grey.shade200),
-        //   ),
-        // ),
+       textTheme: TextTheme(bodyMedium: TextStyle(color: Colors.white)),
+        scaffoldBackgroundColor: Colors.black
       ),
-      darkTheme: ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple,
-          brightness: Brightness.dark,
-        ),
-      ),
+     
       // Set the initial route or home widget
       home: const LandingView(),
     );

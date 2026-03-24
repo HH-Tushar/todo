@@ -14,7 +14,7 @@ final taskFilterProvider = StateProvider<TaskFilterState>((ref) => const TaskFil
 
 /// 2. The Task List Stream Provider
 /// This automatically re-runs whenever the `taskFilterProvider` changes.
-final tasksStreamProvider = StreamProvider<List<Task>>((ref) {
+final searchTasksStreamProvider = StreamProvider<List<Task>>((ref) {
   final repository = ref.watch(taskRepositoryProvider);
   final filters = ref.watch(taskFilterProvider);
 
@@ -24,6 +24,48 @@ final tasksStreamProvider = StreamProvider<List<Task>>((ref) {
     sortBy: filters.sortBy,
   );
 });
+
+
+
+
+
+
+
+/// The main stream that gets everything from the DB
+final allTasksProvider = StreamProvider<List<Task>>((ref) {
+  return ref.watch(taskRepositoryProvider).watchTasks();
+});
+
+/// Filtered Provider: Todo
+final todoTasksProvider = Provider<AsyncValue<List<Task>>>((ref) {
+  return ref.watch(allTasksProvider).whenData(
+    (tasks) => tasks.where((t) => t.status == TaskStatus.todo).toList(),
+  );
+});
+
+/// Filtered Provider: In Progress
+final inProgressTasksProvider = Provider<AsyncValue<List<Task>>>((ref) {
+  return ref.watch(allTasksProvider).whenData(
+    (tasks) => tasks.where((t) => t.status == TaskStatus.inProgress).toList(),
+  );
+});
+
+/// Filtered Provider: Stuck
+final stuckTasksProvider = Provider<AsyncValue<List<Task>>>((ref) {
+  return ref.watch(allTasksProvider).whenData(
+    (tasks) => tasks.where((t) => t.status == TaskStatus.stuck).toList(),
+  );
+});
+
+/// Filtered Provider: Completed
+final completedTasksProvider = Provider<AsyncValue<List<Task>>>((ref) {
+  return ref.watch(allTasksProvider).whenData(
+    (tasks) => tasks.where((t) => t.status == TaskStatus.completed).toList(),
+  );
+});
+
+
+
 
 /// 3. The Task Action Notifier
 /// Handles Create, Update, and Delete operations.

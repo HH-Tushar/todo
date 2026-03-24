@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 import 'add_task_view.dart';
+import 'home/home_view.dart';
 import 'home_view.dart';
+import 'test.dart';
 
 class LandingView extends StatefulWidget {
   const LandingView({super.key});
@@ -12,7 +14,7 @@ class LandingView extends StatefulWidget {
 
 class _LandingViewState extends State<LandingView> {
   int currentIndex=0;
-  final children = [HomeView(),AddTaskView()];
+  final children = [HomeView(),AddTaskView(),TodoHomePage()];
 
   @override
   Widget build(BuildContext context) {
