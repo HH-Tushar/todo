@@ -26,3 +26,37 @@ class TaskFilterState {
     );
   }
 }
+
+// The state object
+class TaskDraftState {
+  final String title;
+  final String description;
+  final DateTime deadline;
+  final TaskType taskType;
+  final bool hasReminder;
+
+  TaskDraftState({
+    required this.title,
+    required this.description,
+    required this.deadline,
+    required this.taskType,
+    required this.hasReminder,
+  });
+
+  TaskDraftState copyWith({
+    String? title,
+    String? description,
+    DateTime? deadline,
+    TaskType? taskType,
+    bool? hasReminder,
+  }) {
+    return TaskDraftState(
+      title: title ?? this.title,
+      description: description ?? this.description,
+      deadline: deadline ?? this.deadline,
+      taskType: taskType ?? this.taskType,
+      hasReminder: hasReminder ?? this.hasReminder,
+    );
+  }
+}
+

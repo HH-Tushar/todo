@@ -1,22 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:task_today/features/presentation/screens/home/home_view.dart';
 
 import 'core/init.dart';
 import 'features/presentation/screens/landing_view.dart';
 
 // Import your Home Screen here
-// import 'features/todo/presentation/pages/todo_home_page.dart'; 
+// import 'features/todo/presentation/pages/todo_home_page.dart';
 
 void main() async {
   // 1. Ensure Flutter framework is ready
   WidgetsFlutterBinding.ensureInitialized();
 
   // 2. Wrap the entire App in ProviderScope for Riverpod
-  runApp(
-    const ProviderScope(
-      child: TaskTodayApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: TaskTodayApp()));
 }
 
 class TaskTodayApp extends ConsumerWidget {
@@ -32,12 +29,29 @@ class TaskTodayApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-       textTheme: TextTheme(bodyMedium: TextStyle(color: Colors.white)),
-        scaffoldBackgroundColor: Colors.black
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.black,
+
+          titleTextStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.8,
+          ),
+        ),
+
+        textTheme: TextTheme(
+          // bodyMedium: TextStyle(color: Colors.white),
+          // titleMedium: TextStyle(color: Colors.white),
+        ),
+        scaffoldBackgroundColor: Colors.black,
+        brightness: Brightness.dark,
+        canvasColor: Colors.black,
+        colorScheme: const ColorScheme.dark(surface: Colors.black),
       ),
-     
+
       // Set the initial route or home widget
-      home: const LandingView(),
+      home: const HomeView(),
     );
   }
 }
@@ -50,15 +64,16 @@ class TodoPlaceholderPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Task Today'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text('Task Today'), centerTitle: true),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.check_circle_outline, size: 64, color: Colors.deepPurple),
+            const Icon(
+              Icons.check_circle_outline,
+              size: 64,
+              color: Colors.deepPurple,
+            ),
             const SizedBox(height: 16),
             const Text(
               'Database & DI Initialized!',

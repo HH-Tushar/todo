@@ -16,16 +16,23 @@ class Tasks extends Table {
   
   // High-performance Indexing for your search/sort requirements
   IntColumn get status => intEnum<TaskStatus>()(); 
+  IntColumn get taskType => intEnum<TaskType>()(); 
+  IntColumn get taskPriority => intEnum<TaskPriority>()(); 
   DateTimeColumn get deadline => dateTime()();
   
   BoolColumn get hasReminder => boolean().withDefault(const Constant(false))();
-  TextColumn get taskType => text().withDefault(const Constant('Personal'))();
+  // TextColumn get taskType => text().withDefault(const Constant('Personal'))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   
   // Syncing metadata for your future Firebase integration
   BoolColumn get isSynced => boolean().withDefault(const Constant(false))();
   DateTimeColumn get lastModified => dateTime().withDefault(currentDateAndTime)();
+
 }
+
+@TableIndex(name: 'tasks_status_idx', columns: {#status})
+@TableIndex(name: 'tasks_priority_idx', columns: {#taskPriority})
+@TableIndex(name: 'tasks_deadline_idx', columns: {#deadline})
 
 @DriftDatabase(tables: [Tasks])
 class AppDatabase extends _$AppDatabase {

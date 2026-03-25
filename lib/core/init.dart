@@ -42,7 +42,7 @@ final localTaskDataSourceProvider = Provider<LocalTaskDataSource>((ref) {
 /// This is the "Clean Architecture" way to handle DI.
 /// 
 final taskRepositoryProvider = Provider<ITaskRepository>((ref) {
-  final localDataSource = ref.watch(localTaskDataSourceProvider);
+  final localDataSource = ref.read(localTaskDataSourceProvider);
   return TaskRepositoryImpl(localDataSource);
 });
 

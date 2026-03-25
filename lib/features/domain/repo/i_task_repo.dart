@@ -6,11 +6,10 @@ abstract class ITaskRepository {
   Stream<List<Task>> watchTasks({
     String? searchQuery,
     TaskStatus? filterStatus,
-    String sortBy =
-        'deadline', // Using String for flexible sorting (title, status, deadline)
+    required TaskSortOption sortBy,
   });
   Future<int> createTask(TasksCompanion task);
   Future<bool> updateTask(Task task);
   Future<int> deleteTask(int id);
   Future<Task?> getTaskById(int id);
-} 
+}

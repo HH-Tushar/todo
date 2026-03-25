@@ -3,23 +3,25 @@ import '../../domain/models/task_status.dart';
 import '../../domain/repo/i_task_repo.dart';
 import '../datasource/local_task_datasource.dart';
 
-
 class TaskRepositoryImpl implements ITaskRepository {
   final LocalTaskDataSource _localDataSource;
 
   TaskRepositoryImpl(this._localDataSource);
-@override
+  @override
   Stream<List<Task>> watchTasks({
-    String? searchQuery, 
-    TaskStatus? filterStatus, 
-    String sortBy = 'deadline',
+    String? searchQuery,
+    TaskStatus? filterStatus,
+   required TaskSortOption sortBy
+
   }) {
     return _localDataSource.watchTasks(
-      searchQuery: searchQuery, 
-      filterStatus: filterStatus, 
-      sortBy: sortBy,
+      searchQuery: searchQuery,
+      filterStatus: filterStatus,
+      sortOption: sortBy,
     );
   }
+
+ 
 
   @override
   Future<int> createTask(TasksCompanion task) {
@@ -40,6 +42,4 @@ class TaskRepositoryImpl implements ITaskRepository {
   Future<Task?> getTaskById(int id) {
     return _localDataSource.getTaskById(id);
   }
-  
- 
 }

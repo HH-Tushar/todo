@@ -55,6 +55,24 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
         type: DriftSqlType.int,
         requiredDuringInsert: true,
       ).withConverter<TaskStatus>($TasksTable.$converterstatus);
+  @override
+  late final GeneratedColumnWithTypeConverter<TaskType, int> taskType =
+      GeneratedColumn<int>(
+        'task_type',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: true,
+      ).withConverter<TaskType>($TasksTable.$convertertaskType);
+  @override
+  late final GeneratedColumnWithTypeConverter<TaskPriority, int> taskPriority =
+      GeneratedColumn<int>(
+        'task_priority',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: true,
+      ).withConverter<TaskPriority>($TasksTable.$convertertaskPriority);
   static const VerificationMeta _deadlineMeta = const VerificationMeta(
     'deadline',
   );
@@ -80,18 +98,6 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
       'CHECK ("has_reminder" IN (0, 1))',
     ),
     defaultValue: const Constant(false),
-  );
-  static const VerificationMeta _taskTypeMeta = const VerificationMeta(
-    'taskType',
-  );
-  @override
-  late final GeneratedColumn<String> taskType = GeneratedColumn<String>(
-    'task_type',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant('Personal'),
   );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
@@ -138,9 +144,10 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
     title,
     description,
     status,
+    taskType,
+    taskPriority,
     deadline,
     hasReminder,
-    taskType,
     createdAt,
     isSynced,
     lastModified,
@@ -194,12 +201,6 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
         ),
       );
     }
-    if (data.containsKey('task_type')) {
-      context.handle(
-        _taskTypeMeta,
-        taskType.isAcceptableOrUnknown(data['task_type']!, _taskTypeMeta),
-      );
-    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -248,6 +249,18 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
           data['${effectivePrefix}status'],
         )!,
       ),
+      taskType: $TasksTable.$convertertaskType.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}task_type'],
+        )!,
+      ),
+      taskPriority: $TasksTable.$convertertaskPriority.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}task_priority'],
+        )!,
+      ),
       deadline: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}deadline'],
@@ -255,10 +268,6 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
       hasReminder: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}has_reminder'],
-      )!,
-      taskType: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}task_type'],
       )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
@@ -282,6 +291,10 @@ class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {
 
   static JsonTypeConverter2<TaskStatus, int, int> $converterstatus =
       const EnumIndexConverter<TaskStatus>(TaskStatus.values);
+  static JsonTypeConverter2<TaskType, int, int> $convertertaskType =
+      const EnumIndexConverter<TaskType>(TaskType.values);
+  static JsonTypeConverter2<TaskPriority, int, int> $convertertaskPriority =
+      const EnumIndexConverter<TaskPriority>(TaskPriority.values);
 }
 
 class Task extends DataClass implements Insertable<Task> {
@@ -289,9 +302,10 @@ class Task extends DataClass implements Insertable<Task> {
   final String title;
   final String description;
   final TaskStatus status;
+  final TaskType taskType;
+  final TaskPriority taskPriority;
   final DateTime deadline;
   final bool hasReminder;
-  final String taskType;
   final DateTime createdAt;
   final bool isSynced;
   final DateTime lastModified;
@@ -300,9 +314,10 @@ class Task extends DataClass implements Insertable<Task> {
     required this.title,
     required this.description,
     required this.status,
+    required this.taskType,
+    required this.taskPriority,
     required this.deadline,
     required this.hasReminder,
-    required this.taskType,
     required this.createdAt,
     required this.isSynced,
     required this.lastModified,
@@ -316,9 +331,18 @@ class Task extends DataClass implements Insertable<Task> {
     {
       map['status'] = Variable<int>($TasksTable.$converterstatus.toSql(status));
     }
+    {
+      map['task_type'] = Variable<int>(
+        $TasksTable.$convertertaskType.toSql(taskType),
+      );
+    }
+    {
+      map['task_priority'] = Variable<int>(
+        $TasksTable.$convertertaskPriority.toSql(taskPriority),
+      );
+    }
     map['deadline'] = Variable<DateTime>(deadline);
     map['has_reminder'] = Variable<bool>(hasReminder);
-    map['task_type'] = Variable<String>(taskType);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['is_synced'] = Variable<bool>(isSynced);
     map['last_modified'] = Variable<DateTime>(lastModified);
@@ -331,9 +355,10 @@ class Task extends DataClass implements Insertable<Task> {
       title: Value(title),
       description: Value(description),
       status: Value(status),
+      taskType: Value(taskType),
+      taskPriority: Value(taskPriority),
       deadline: Value(deadline),
       hasReminder: Value(hasReminder),
-      taskType: Value(taskType),
       createdAt: Value(createdAt),
       isSynced: Value(isSynced),
       lastModified: Value(lastModified),
@@ -352,9 +377,14 @@ class Task extends DataClass implements Insertable<Task> {
       status: $TasksTable.$converterstatus.fromJson(
         serializer.fromJson<int>(json['status']),
       ),
+      taskType: $TasksTable.$convertertaskType.fromJson(
+        serializer.fromJson<int>(json['taskType']),
+      ),
+      taskPriority: $TasksTable.$convertertaskPriority.fromJson(
+        serializer.fromJson<int>(json['taskPriority']),
+      ),
       deadline: serializer.fromJson<DateTime>(json['deadline']),
       hasReminder: serializer.fromJson<bool>(json['hasReminder']),
-      taskType: serializer.fromJson<String>(json['taskType']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       isSynced: serializer.fromJson<bool>(json['isSynced']),
       lastModified: serializer.fromJson<DateTime>(json['lastModified']),
@@ -370,9 +400,14 @@ class Task extends DataClass implements Insertable<Task> {
       'status': serializer.toJson<int>(
         $TasksTable.$converterstatus.toJson(status),
       ),
+      'taskType': serializer.toJson<int>(
+        $TasksTable.$convertertaskType.toJson(taskType),
+      ),
+      'taskPriority': serializer.toJson<int>(
+        $TasksTable.$convertertaskPriority.toJson(taskPriority),
+      ),
       'deadline': serializer.toJson<DateTime>(deadline),
       'hasReminder': serializer.toJson<bool>(hasReminder),
-      'taskType': serializer.toJson<String>(taskType),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'isSynced': serializer.toJson<bool>(isSynced),
       'lastModified': serializer.toJson<DateTime>(lastModified),
@@ -384,9 +419,10 @@ class Task extends DataClass implements Insertable<Task> {
     String? title,
     String? description,
     TaskStatus? status,
+    TaskType? taskType,
+    TaskPriority? taskPriority,
     DateTime? deadline,
     bool? hasReminder,
-    String? taskType,
     DateTime? createdAt,
     bool? isSynced,
     DateTime? lastModified,
@@ -395,9 +431,10 @@ class Task extends DataClass implements Insertable<Task> {
     title: title ?? this.title,
     description: description ?? this.description,
     status: status ?? this.status,
+    taskType: taskType ?? this.taskType,
+    taskPriority: taskPriority ?? this.taskPriority,
     deadline: deadline ?? this.deadline,
     hasReminder: hasReminder ?? this.hasReminder,
-    taskType: taskType ?? this.taskType,
     createdAt: createdAt ?? this.createdAt,
     isSynced: isSynced ?? this.isSynced,
     lastModified: lastModified ?? this.lastModified,
@@ -410,11 +447,14 @@ class Task extends DataClass implements Insertable<Task> {
           ? data.description.value
           : this.description,
       status: data.status.present ? data.status.value : this.status,
+      taskType: data.taskType.present ? data.taskType.value : this.taskType,
+      taskPriority: data.taskPriority.present
+          ? data.taskPriority.value
+          : this.taskPriority,
       deadline: data.deadline.present ? data.deadline.value : this.deadline,
       hasReminder: data.hasReminder.present
           ? data.hasReminder.value
           : this.hasReminder,
-      taskType: data.taskType.present ? data.taskType.value : this.taskType,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       isSynced: data.isSynced.present ? data.isSynced.value : this.isSynced,
       lastModified: data.lastModified.present
@@ -430,9 +470,10 @@ class Task extends DataClass implements Insertable<Task> {
           ..write('title: $title, ')
           ..write('description: $description, ')
           ..write('status: $status, ')
+          ..write('taskType: $taskType, ')
+          ..write('taskPriority: $taskPriority, ')
           ..write('deadline: $deadline, ')
           ..write('hasReminder: $hasReminder, ')
-          ..write('taskType: $taskType, ')
           ..write('createdAt: $createdAt, ')
           ..write('isSynced: $isSynced, ')
           ..write('lastModified: $lastModified')
@@ -446,9 +487,10 @@ class Task extends DataClass implements Insertable<Task> {
     title,
     description,
     status,
+    taskType,
+    taskPriority,
     deadline,
     hasReminder,
-    taskType,
     createdAt,
     isSynced,
     lastModified,
@@ -461,9 +503,10 @@ class Task extends DataClass implements Insertable<Task> {
           other.title == this.title &&
           other.description == this.description &&
           other.status == this.status &&
+          other.taskType == this.taskType &&
+          other.taskPriority == this.taskPriority &&
           other.deadline == this.deadline &&
           other.hasReminder == this.hasReminder &&
-          other.taskType == this.taskType &&
           other.createdAt == this.createdAt &&
           other.isSynced == this.isSynced &&
           other.lastModified == this.lastModified);
@@ -474,9 +517,10 @@ class TasksCompanion extends UpdateCompanion<Task> {
   final Value<String> title;
   final Value<String> description;
   final Value<TaskStatus> status;
+  final Value<TaskType> taskType;
+  final Value<TaskPriority> taskPriority;
   final Value<DateTime> deadline;
   final Value<bool> hasReminder;
-  final Value<String> taskType;
   final Value<DateTime> createdAt;
   final Value<bool> isSynced;
   final Value<DateTime> lastModified;
@@ -485,9 +529,10 @@ class TasksCompanion extends UpdateCompanion<Task> {
     this.title = const Value.absent(),
     this.description = const Value.absent(),
     this.status = const Value.absent(),
+    this.taskType = const Value.absent(),
+    this.taskPriority = const Value.absent(),
     this.deadline = const Value.absent(),
     this.hasReminder = const Value.absent(),
-    this.taskType = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.isSynced = const Value.absent(),
     this.lastModified = const Value.absent(),
@@ -497,23 +542,27 @@ class TasksCompanion extends UpdateCompanion<Task> {
     required String title,
     this.description = const Value.absent(),
     required TaskStatus status,
+    required TaskType taskType,
+    required TaskPriority taskPriority,
     required DateTime deadline,
     this.hasReminder = const Value.absent(),
-    this.taskType = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.isSynced = const Value.absent(),
     this.lastModified = const Value.absent(),
   }) : title = Value(title),
        status = Value(status),
+       taskType = Value(taskType),
+       taskPriority = Value(taskPriority),
        deadline = Value(deadline);
   static Insertable<Task> custom({
     Expression<int>? id,
     Expression<String>? title,
     Expression<String>? description,
     Expression<int>? status,
+    Expression<int>? taskType,
+    Expression<int>? taskPriority,
     Expression<DateTime>? deadline,
     Expression<bool>? hasReminder,
-    Expression<String>? taskType,
     Expression<DateTime>? createdAt,
     Expression<bool>? isSynced,
     Expression<DateTime>? lastModified,
@@ -523,9 +572,10 @@ class TasksCompanion extends UpdateCompanion<Task> {
       if (title != null) 'title': title,
       if (description != null) 'description': description,
       if (status != null) 'status': status,
+      if (taskType != null) 'task_type': taskType,
+      if (taskPriority != null) 'task_priority': taskPriority,
       if (deadline != null) 'deadline': deadline,
       if (hasReminder != null) 'has_reminder': hasReminder,
-      if (taskType != null) 'task_type': taskType,
       if (createdAt != null) 'created_at': createdAt,
       if (isSynced != null) 'is_synced': isSynced,
       if (lastModified != null) 'last_modified': lastModified,
@@ -537,9 +587,10 @@ class TasksCompanion extends UpdateCompanion<Task> {
     Value<String>? title,
     Value<String>? description,
     Value<TaskStatus>? status,
+    Value<TaskType>? taskType,
+    Value<TaskPriority>? taskPriority,
     Value<DateTime>? deadline,
     Value<bool>? hasReminder,
-    Value<String>? taskType,
     Value<DateTime>? createdAt,
     Value<bool>? isSynced,
     Value<DateTime>? lastModified,
@@ -549,9 +600,10 @@ class TasksCompanion extends UpdateCompanion<Task> {
       title: title ?? this.title,
       description: description ?? this.description,
       status: status ?? this.status,
+      taskType: taskType ?? this.taskType,
+      taskPriority: taskPriority ?? this.taskPriority,
       deadline: deadline ?? this.deadline,
       hasReminder: hasReminder ?? this.hasReminder,
-      taskType: taskType ?? this.taskType,
       createdAt: createdAt ?? this.createdAt,
       isSynced: isSynced ?? this.isSynced,
       lastModified: lastModified ?? this.lastModified,
@@ -575,14 +627,21 @@ class TasksCompanion extends UpdateCompanion<Task> {
         $TasksTable.$converterstatus.toSql(status.value),
       );
     }
+    if (taskType.present) {
+      map['task_type'] = Variable<int>(
+        $TasksTable.$convertertaskType.toSql(taskType.value),
+      );
+    }
+    if (taskPriority.present) {
+      map['task_priority'] = Variable<int>(
+        $TasksTable.$convertertaskPriority.toSql(taskPriority.value),
+      );
+    }
     if (deadline.present) {
       map['deadline'] = Variable<DateTime>(deadline.value);
     }
     if (hasReminder.present) {
       map['has_reminder'] = Variable<bool>(hasReminder.value);
-    }
-    if (taskType.present) {
-      map['task_type'] = Variable<String>(taskType.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
@@ -603,9 +662,10 @@ class TasksCompanion extends UpdateCompanion<Task> {
           ..write('title: $title, ')
           ..write('description: $description, ')
           ..write('status: $status, ')
+          ..write('taskType: $taskType, ')
+          ..write('taskPriority: $taskPriority, ')
           ..write('deadline: $deadline, ')
           ..write('hasReminder: $hasReminder, ')
-          ..write('taskType: $taskType, ')
           ..write('createdAt: $createdAt, ')
           ..write('isSynced: $isSynced, ')
           ..write('lastModified: $lastModified')
@@ -631,9 +691,10 @@ typedef $$TasksTableCreateCompanionBuilder =
       required String title,
       Value<String> description,
       required TaskStatus status,
+      required TaskType taskType,
+      required TaskPriority taskPriority,
       required DateTime deadline,
       Value<bool> hasReminder,
-      Value<String> taskType,
       Value<DateTime> createdAt,
       Value<bool> isSynced,
       Value<DateTime> lastModified,
@@ -644,9 +705,10 @@ typedef $$TasksTableUpdateCompanionBuilder =
       Value<String> title,
       Value<String> description,
       Value<TaskStatus> status,
+      Value<TaskType> taskType,
+      Value<TaskPriority> taskPriority,
       Value<DateTime> deadline,
       Value<bool> hasReminder,
-      Value<String> taskType,
       Value<DateTime> createdAt,
       Value<bool> isSynced,
       Value<DateTime> lastModified,
@@ -681,6 +743,18 @@ class $$TasksTableFilterComposer extends Composer<_$AppDatabase, $TasksTable> {
         builder: (column) => ColumnWithTypeConverterFilters(column),
       );
 
+  ColumnWithTypeConverterFilters<TaskType, TaskType, int> get taskType =>
+      $composableBuilder(
+        column: $table.taskType,
+        builder: (column) => ColumnWithTypeConverterFilters(column),
+      );
+
+  ColumnWithTypeConverterFilters<TaskPriority, TaskPriority, int>
+  get taskPriority => $composableBuilder(
+    column: $table.taskPriority,
+    builder: (column) => ColumnWithTypeConverterFilters(column),
+  );
+
   ColumnFilters<DateTime> get deadline => $composableBuilder(
     column: $table.deadline,
     builder: (column) => ColumnFilters(column),
@@ -688,11 +762,6 @@ class $$TasksTableFilterComposer extends Composer<_$AppDatabase, $TasksTable> {
 
   ColumnFilters<bool> get hasReminder => $composableBuilder(
     column: $table.hasReminder,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get taskType => $composableBuilder(
-    column: $table.taskType,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -741,6 +810,16 @@ class $$TasksTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get taskType => $composableBuilder(
+    column: $table.taskType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get taskPriority => $composableBuilder(
+    column: $table.taskPriority,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get deadline => $composableBuilder(
     column: $table.deadline,
     builder: (column) => ColumnOrderings(column),
@@ -748,11 +827,6 @@ class $$TasksTableOrderingComposer
 
   ColumnOrderings<bool> get hasReminder => $composableBuilder(
     column: $table.hasReminder,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get taskType => $composableBuilder(
-    column: $table.taskType,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -795,6 +869,15 @@ class $$TasksTableAnnotationComposer
   GeneratedColumnWithTypeConverter<TaskStatus, int> get status =>
       $composableBuilder(column: $table.status, builder: (column) => column);
 
+  GeneratedColumnWithTypeConverter<TaskType, int> get taskType =>
+      $composableBuilder(column: $table.taskType, builder: (column) => column);
+
+  GeneratedColumnWithTypeConverter<TaskPriority, int> get taskPriority =>
+      $composableBuilder(
+        column: $table.taskPriority,
+        builder: (column) => column,
+      );
+
   GeneratedColumn<DateTime> get deadline =>
       $composableBuilder(column: $table.deadline, builder: (column) => column);
 
@@ -802,9 +885,6 @@ class $$TasksTableAnnotationComposer
     column: $table.hasReminder,
     builder: (column) => column,
   );
-
-  GeneratedColumn<String> get taskType =>
-      $composableBuilder(column: $table.taskType, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -850,9 +930,10 @@ class $$TasksTableTableManager
                 Value<String> title = const Value.absent(),
                 Value<String> description = const Value.absent(),
                 Value<TaskStatus> status = const Value.absent(),
+                Value<TaskType> taskType = const Value.absent(),
+                Value<TaskPriority> taskPriority = const Value.absent(),
                 Value<DateTime> deadline = const Value.absent(),
                 Value<bool> hasReminder = const Value.absent(),
-                Value<String> taskType = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<bool> isSynced = const Value.absent(),
                 Value<DateTime> lastModified = const Value.absent(),
@@ -861,9 +942,10 @@ class $$TasksTableTableManager
                 title: title,
                 description: description,
                 status: status,
+                taskType: taskType,
+                taskPriority: taskPriority,
                 deadline: deadline,
                 hasReminder: hasReminder,
-                taskType: taskType,
                 createdAt: createdAt,
                 isSynced: isSynced,
                 lastModified: lastModified,
@@ -874,9 +956,10 @@ class $$TasksTableTableManager
                 required String title,
                 Value<String> description = const Value.absent(),
                 required TaskStatus status,
+                required TaskType taskType,
+                required TaskPriority taskPriority,
                 required DateTime deadline,
                 Value<bool> hasReminder = const Value.absent(),
-                Value<String> taskType = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<bool> isSynced = const Value.absent(),
                 Value<DateTime> lastModified = const Value.absent(),
@@ -885,9 +968,10 @@ class $$TasksTableTableManager
                 title: title,
                 description: description,
                 status: status,
+                taskType: taskType,
+                taskPriority: taskPriority,
                 deadline: deadline,
                 hasReminder: hasReminder,
-                taskType: taskType,
                 createdAt: createdAt,
                 isSynced: isSynced,
                 lastModified: lastModified,
