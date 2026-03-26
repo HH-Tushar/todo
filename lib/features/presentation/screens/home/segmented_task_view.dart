@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../providers/task_provider.dart';
+import '../task_details_view.dart';
 import 'components/task_card.dart';
 
 class SegmentedTaskView extends ConsumerWidget {
@@ -22,11 +23,24 @@ class SegmentedTaskView extends ConsumerWidget {
 
       body: tasksAsync.when(
         data: (tasks) => tasks.isEmpty
-            ? Center(child: Text("You do not have any ${selectedTab.name} task yet."))
+            ? Center(
+                child: Text(
+                  "You do not have any ${selectedTab.name} task yet.",
+                ),
+              )
             : ListView.builder(
                 itemCount: tasks.length,
-                itemBuilder: (context, index) =>
-                    CustomTaskCard(task: tasks[index], onDelete: () {}),
+                itemBuilder: (context, index) => CustomTaskCard(
+                  task: tasks[index],
+                  onDelete: () =>
+                      ref.read(taskActionProvider).removeTask(tasks[index].id),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => TaskDetailsView(taskId: tasks[index].id),
+                    ),
+                  ),
+                ),
               ),
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Text('Error: $e'),

@@ -201,7 +201,64 @@ class AddTaskView extends ConsumerWidget {
                 },
               ),
 
-              const SizedBox(height: 32),
+
+              // Metadata: Type Dropdown
+              _buildActionRow(
+                icon: Icons.tag_outlined,
+                label: 'Task Status',
+                trailing: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white10,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    draft.taskStatus.name,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                onTap: () async {
+                  final TaskStatus? selectedStatus = await showDialog<TaskStatus>(
+                    context: context,
+
+                    builder: (context) => SimpleDialog(
+                      backgroundColor: Colors.black87,
+                      title: const Text(
+                        'Select Task Status',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      children: TaskStatus.values
+                          .map(
+                            (type) => SimpleDialogOption(
+                              onPressed: () => Navigator.pop(context, type),
+                              child: Text(
+                                type.name[0].toUpperCase() +
+                                    type.name.substring(1),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                  );
+                  if (selectedStatus != null) {
+                    draftController.update(
+                      (s) => s.copyWith(taskStatus: selectedStatus),
+                    );
+                  }
+                },
+              ),
+
+
+
+
+
+          vPad35,
 
               // Save Action
               SizedBox(

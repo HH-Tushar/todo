@@ -12,4 +12,5 @@ abstract class ITaskRepository {
   Future<bool> updateTask(Task task);
   Future<int> deleteTask(int id);
   Future<Task?> getTaskById(int id);
+  // Stream<Task?> watchTaskById(int id);
 }

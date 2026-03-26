@@ -29,6 +29,23 @@ final searchTasksStreamProvider = StreamProvider<List<Task>>((ref) {
   );
 });
 
+
+
+final taskDetailProvider = FutureProvider.family<Task?, int>((ref, taskId) async{
+  final repo = ref.read(taskRepositoryProvider);
+  
+
+  return repo.getTaskById(taskId);
+});
+
+// final taskDetailProvider = StreamProvider.family<Task, int>((ref, taskId) {
+//   final repo = ref.watch(taskRepositoryProvider);
+  
+//   // We call the repository to get the specific stream for this ID
+//   return repo.getTaskById(taskId);
+// });
+
+
 /// The main stream that gets everything from the DB
 // final allTasksProvider = StreamProvider<List<Task>>((ref) {
 //   return ref
@@ -96,44 +113,6 @@ final completedTasksProvider = StreamProvider<List<Task>>((ref) {
       );
 });
 
-/// Filtered Provider: Todo
-/// old one's
-// final todoTasksProvider = Provider<AsyncValue<List<Task>>>((ref) {
-//   return ref
-//       .watch(allTasksProvider)
-//       .whenData(
-//         (tasks) => tasks.where((t) => t.status == TaskStatus.todo).toList(),
-//       );
-// });
-
-/// Filtered Provider: In Progress
-// final inProgressTasksProvider = Provider<AsyncValue<List<Task>>>((ref) {
-//   return ref
-//       .watch(allTasksProvider)
-//       .whenData(
-//         (tasks) =>
-//             tasks.where((t) => t.status == TaskStatus.inProgress).toList(),
-//       );
-// });
-
-// /// Filtered Provider: Stuck
-// final stuckTasksProvider = Provider<AsyncValue<List<Task>>>((ref) {
-//   return ref
-//       .watch(allTasksProvider)
-//       .whenData(
-//         (tasks) => tasks.where((t) => t.status == TaskStatus.stuck).toList(),
-//       );
-// });
-
-// /// Filtered Provider: Completed
-// final completedTasksProvider = Provider<AsyncValue<List<Task>>>((ref) {
-//   return ref
-//       .watch(allTasksProvider)
-//       .whenData(
-//         (tasks) =>
-//             tasks.where((t) => t.status == TaskStatus.completed).toList(),
-//       );
-// });
 
 ///
 /// 3. The Task Action Notifier
@@ -152,6 +131,7 @@ final taskDraftProvider = StateProvider<TaskDraftState>(
     deadline: DateTime.now().add(const Duration(hours: 1)),
     taskType: TaskType.personal,
     hasReminder: false,
+    taskStatus:TaskStatus.todo, 
   ),
 );
 
@@ -171,10 +151,10 @@ class TaskActions {
       TasksCompanion.insert(
         title: draft.title,
         deadline: draft.deadline,
-        status: TaskStatus.todo,
+        status: draft.taskStatus,
         taskType: draft.taskType,
         description: Value(draft.description),
-        taskPriority: TaskPriority.modarate,
+        taskPriority: TaskPriority.modarate, 
         hasReminder: Value(draft.hasReminder),
         // lastModified: Value(DateTime.now()),
         createdAt: Value(DateTime.now()),

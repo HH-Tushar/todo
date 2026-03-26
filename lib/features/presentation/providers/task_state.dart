@@ -33,6 +33,7 @@ class TaskDraftState {
   final String description;
   final DateTime deadline;
   final TaskType taskType;
+  final TaskStatus taskStatus;
   final bool hasReminder;
 
   TaskDraftState({
@@ -41,6 +42,7 @@ class TaskDraftState {
     required this.deadline,
     required this.taskType,
     required this.hasReminder,
+    required this.taskStatus,
   });
 
   TaskDraftState copyWith({
@@ -48,6 +50,7 @@ class TaskDraftState {
     String? description,
     DateTime? deadline,
     TaskType? taskType,
+    TaskStatus? taskStatus,
     bool? hasReminder,
   }) {
     return TaskDraftState(
@@ -56,6 +59,7 @@ class TaskDraftState {
       deadline: deadline ?? this.deadline,
       taskType: taskType ?? this.taskType,
       hasReminder: hasReminder ?? this.hasReminder,
+      taskStatus: taskStatus ?? this.taskStatus,
     );
   }
 }

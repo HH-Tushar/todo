@@ -5,6 +5,7 @@ import 'package:task_today/features/presentation/screens/home/segmented_task_vie
 
 import '../../../domain/models/task_status.dart';
 import '../../providers/task_provider.dart';
+import '../task_details_view.dart';
 import 'components/task_card.dart';
 
 class HomeView extends ConsumerWidget {
@@ -61,6 +62,7 @@ class HomeView extends ConsumerWidget {
                       // Only renders items as they enter the viewport
                       return CustomTaskCard(
                         task: tasks[index],
+                        onTap:()=>Navigator.push(context, MaterialPageRoute(builder: (_)=>TaskDetailsView(taskId:  tasks[index].id,))),
                         onDelete: () => ref
                             .read(taskActionProvider)
                             .removeTask(tasks[index].id),
