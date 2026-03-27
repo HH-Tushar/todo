@@ -29,20 +29,21 @@ class TaskDetailsView extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("Title", style: subTitle),
+                vPad5,
                 Text(
                   task.title,
                   style: const TextStyle(color: Colors.white70, fontSize: 18),
                 ),
                 vPad20,
-                Text("Details", style: subTitle),
+                Text("Details", style: subTitle),vPad5,
                 Text(
                   task.description,
                   style: const TextStyle(color: Colors.white70, fontSize: 16),
                 ),
 
-                vPad15,
-                const Divider(color: Colors.white10, height: 40),
-
+                vPad35,
+                const Divider(color: Colors.white70, height: 40),
+vPad20,
                 // Metadata: Type Dropdown
                 _buildActionRow(
                   icon: Icons.tag_outlined,
@@ -53,7 +54,7 @@ class TaskDetailsView extends ConsumerWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white10,
+                      color: baseBlack,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -105,7 +106,7 @@ class TaskDetailsView extends ConsumerWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white10,
+                      color: baseBlack,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -127,7 +128,7 @@ class TaskDetailsView extends ConsumerWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white10,
+                      color: baseBlack,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -237,9 +238,10 @@ class TaskDetailsView extends ConsumerWidget {
                 ),
 
                 vPad35,
+                vPad35,
                 SizedBox(
                   width: double.infinity,
-                  height: 60,
+                  height: 45,
                   child: ElevatedButton(
                     onPressed: () async {
                       ref.read(taskDraftProvider.notifier).setFromTask(task);
@@ -259,9 +261,10 @@ class TaskDetailsView extends ConsumerWidget {
                     child: const Text(
                       'EDIT TASK',
                       style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 1,
+                        fontSize: 14,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 0.5,
                       ),
                     ),
                   ),
@@ -287,7 +290,7 @@ Widget _buildActionRow({
 }) {
   return InkWell(
     onTap: onTap,
-    splashColor: Colors.white10,
+    splashColor: baseBlack,
     borderRadius: BorderRadius.circular(12),
     child: Padding(
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 4),

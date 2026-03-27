@@ -2,17 +2,18 @@ import 'dart:ui';
 
 import '../domain/models/task_status.dart';
 
-const highPriority = Color(0xff8B0000);
-const modaratePriority = Color(0xff5A1A1A);
-const lowPriority = Color(0xff2A2A5A);
+ const highPriority = Color(0xff8B0000);
+ const baseBlack =  Color.fromARGB(255, 56, 56, 56);
+// const modaratePriority = Color(0xff5A1A1A);
+// const lowPriority = Color(0xff2A2A5A);
 
-///
-///task type color code
-///
-const personalTaskType = Color(0xffE0F7F4);
-const familylTaskType = Color(0xffFFF0D4);
-const officeTaskType = Color(0xffE8F19A);
-const eduTaskType = Color(0xffD4E9FF);
+// ///
+// ///task type color code
+// ///
+// const personalTaskType = Color(0xffE0F7F4);
+// const familylTaskType = Color(0xffFFF0D4);
+// const officeTaskType = Color(0xffE8F19A);
+// const eduTaskType = Color(0xffD4E9FF);
 
 
 

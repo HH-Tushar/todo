@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:task_today/features/common/formater.dart';
 import 'package:utills/utills.dart';
+import '../../common/colors.dart';
 import '../../common/text_style.dart';
 import '../../domain/models/task_status.dart';
 import '../providers/task_provider.dart';
@@ -49,18 +50,20 @@ class AddTaskView extends ConsumerWidget {
               Text("Title", style: subTitle),
               vPad5,
               TextFormField(
+                onTapOutside: (event) => FocusScope.of(context).unfocus(),
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
                 initialValue: draft.title,
+                maxLines: 3,
                 decoration: const InputDecoration(
                   hintText: 'Task Title',
                   hintStyle: TextStyle(color: Colors.white24),
                   border: InputBorder.none,
                   contentPadding: EdgeInsets.zero,
-                  fillColor: Color.fromARGB(255, 34, 34, 34),
+                  fillColor: baseBlack,
                   filled: true,
                 ),
 
@@ -76,14 +79,15 @@ class AddTaskView extends ConsumerWidget {
               Text("Description", style: subTitle),
               vPad5,
               TextFormField(
-                maxLines: 4,
+                onTapOutside: (event) => FocusScope.of(context).unfocus(),
+                maxLines: 6,
                 style: const TextStyle(color: Colors.white70, fontSize: 16),
                 initialValue: draft.description,
                 decoration: const InputDecoration(
                   hintText: 'Add description...',
                   hintStyle: TextStyle(color: Colors.white24),
                   border: InputBorder.none,
-                  fillColor: Color.fromARGB(255, 34, 34, 34),
+                  fillColor: baseBlack,
                   filled: true,
                 ),
                 onChanged: (value) {
@@ -163,7 +167,7 @@ class AddTaskView extends ConsumerWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white10,
+                    color: baseBlack,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
@@ -215,7 +219,7 @@ class AddTaskView extends ConsumerWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white10,
+                    color: baseBlack,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
@@ -263,11 +267,11 @@ class AddTaskView extends ConsumerWidget {
               // Save Action
               SizedBox(
                 width: double.infinity,
-                height: 60,
+                height: 55,
                 child: ElevatedButton(
                   onPressed: () async {
                     draft.id != null
-                        ? await taskController.updateTask(context )
+                        ? await taskController.updateTask(context)
                         : await taskController.addTask(context);
                   },
                   style: ElevatedButton.styleFrom(
@@ -281,7 +285,7 @@ class AddTaskView extends ConsumerWidget {
                   child: const Text(
                     'SAVE TASK',
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 15,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 1,
                     ),
@@ -304,7 +308,7 @@ class AddTaskView extends ConsumerWidget {
   }) {
     return InkWell(
       onTap: onTap,
-      splashColor: Colors.white10,
+      splashColor: baseBlack,
       borderRadius: BorderRadius.circular(12),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 4),

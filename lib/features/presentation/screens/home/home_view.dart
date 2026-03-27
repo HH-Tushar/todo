@@ -104,6 +104,9 @@ class HomeView extends ConsumerWidget {
             MaterialPageRoute(builder: (_) => AddTaskView()),
           );
         },
+        mini: true,
+        shape: CircleBorder(),
+        child: Icon(Icons.add),
       ),
     );
   }
@@ -129,7 +132,7 @@ class _HeaderSection extends StatelessWidget {
                     style: TextStyle(color: Colors.grey, fontSize: 18),
                   ),
                   Text(
-                    'Rakib 👋',
+                    'Tushar 👋',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 18,
@@ -194,7 +197,7 @@ class _CategoryGrid extends ConsumerWidget {
               children: [
                 _BentoCard(
                   color: const Color(0xFFD4D4FF),
-                  icon: Icons.lightbulb_outline,
+                  icon: Icons.today_outlined,
                   title: 'To Do',
                   taskCount: todoCount,
                   onTap: () {
@@ -208,8 +211,8 @@ class _CategoryGrid extends ConsumerWidget {
                 ),
 
                 _BentoCard(
-                  color: const Color(0xFFE8F19A),
-                  icon: Icons.extension_outlined,
+                  color: Colors.brown.shade400,
+                  icon: Icons.stop_circle_outlined,
                   title: 'Stuck',
                   taskCount: stuckCount,
                   onTap: () {
