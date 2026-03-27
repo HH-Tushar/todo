@@ -1,6 +1,6 @@
 enum TaskStatus { todo, inProgress, stuck, completed }
 
-enum TaskPriority { high, modarate, low }
+enum TaskPriority { high, moderate, low }
 
 enum TaskType { personal, family, office, edu }
 enum TaskSortOption {

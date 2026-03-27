@@ -20,7 +20,9 @@ class AddTaskView extends ConsumerWidget {
     const primaryGold = Color(0xFFE8F19A);
 
     return Scaffold(
-      appBar: AppBar(title: Text("CREATE TASK")),
+      appBar: AppBar(
+        title: Text(draft.id != null ? "UPDATE TASK" : "CREATE TASK"),
+      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: defaultPadding),
         child: Form(
@@ -52,6 +54,7 @@ class AddTaskView extends ConsumerWidget {
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
+                initialValue: draft.title,
                 decoration: const InputDecoration(
                   hintText: 'Task Title',
                   hintStyle: TextStyle(color: Colors.white24),
@@ -73,8 +76,9 @@ class AddTaskView extends ConsumerWidget {
               Text("Description", style: subTitle),
               vPad5,
               TextFormField(
-                maxLines: 3,
+                maxLines: 4,
                 style: const TextStyle(color: Colors.white70, fontSize: 16),
+                initialValue: draft.description,
                 decoration: const InputDecoration(
                   hintText: 'Add description...',
                   hintStyle: TextStyle(color: Colors.white24),
@@ -201,7 +205,6 @@ class AddTaskView extends ConsumerWidget {
                 },
               ),
 
-
               // Metadata: Type Dropdown
               _buildActionRow(
                 icon: Icons.tag_outlined,
@@ -224,28 +227,29 @@ class AddTaskView extends ConsumerWidget {
                   ),
                 ),
                 onTap: () async {
-                  final TaskStatus? selectedStatus = await showDialog<TaskStatus>(
-                    context: context,
+                  final TaskStatus? selectedStatus =
+                      await showDialog<TaskStatus>(
+                        context: context,
 
-                    builder: (context) => SimpleDialog(
-                      backgroundColor: Colors.black87,
-                      title: const Text(
-                        'Select Task Status',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      children: TaskStatus.values
-                          .map(
-                            (type) => SimpleDialogOption(
-                              onPressed: () => Navigator.pop(context, type),
-                              child: Text(
-                                type.name[0].toUpperCase() +
-                                    type.name.substring(1),
-                              ),
-                            ),
-                          )
-                          .toList(),
-                    ),
-                  );
+                        builder: (context) => SimpleDialog(
+                          backgroundColor: Colors.black87,
+                          title: const Text(
+                            'Select Task Status',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          children: TaskStatus.values
+                              .map(
+                                (type) => SimpleDialogOption(
+                                  onPressed: () => Navigator.pop(context, type),
+                                  child: Text(
+                                    type.name[0].toUpperCase() +
+                                        type.name.substring(1),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      );
                   if (selectedStatus != null) {
                     draftController.update(
                       (s) => s.copyWith(taskStatus: selectedStatus),
@@ -254,11 +258,7 @@ class AddTaskView extends ConsumerWidget {
                 },
               ),
 
-
-
-
-
-          vPad35,
+              vPad35,
 
               // Save Action
               SizedBox(
@@ -266,7 +266,9 @@ class AddTaskView extends ConsumerWidget {
                 height: 60,
                 child: ElevatedButton(
                   onPressed: () async {
-                    await taskController.addTask(context);
+                    draft.id != null
+                        ? await taskController.updateTask(context )
+                        : await taskController.addTask(context);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryGold,

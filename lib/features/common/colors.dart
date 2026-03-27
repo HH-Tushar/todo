@@ -26,7 +26,7 @@ extension TaskPriorityColor on TaskPriority {
   Color get backgroundColor {
     switch (this) {
       case TaskPriority.high: return const Color(0xFFFFD4D4);
-      case TaskPriority.modarate: return const Color(0xFFF19A9A);
+      case TaskPriority.moderate: return const Color(0xFFF19A9A);
       case TaskPriority.low: return const Color(0xFFD4D4FF);
     }
   }
@@ -34,7 +34,7 @@ extension TaskPriorityColor on TaskPriority {
   Color get textColor {
     switch (this) {
       case TaskPriority.high: return const Color(0xFF8B0000);
-      case TaskPriority.modarate: return const Color(0xFF5A1A1A);
+      case TaskPriority.moderate: return const Color(0xFF5A1A1A);
       case TaskPriority.low: return const Color(0xFF2A2A5A);
     }
   }

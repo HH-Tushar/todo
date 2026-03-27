@@ -31,31 +31,6 @@ final searchTasksStreamProvider = StreamProvider<List<Task>>((ref) {
 
 
 
-final taskDetailProvider = FutureProvider.family<Task?, int>((ref, taskId) async{
-  final repo = ref.read(taskRepositoryProvider);
-  
-
-  return repo.getTaskById(taskId);
-});
-
-// final taskDetailProvider = StreamProvider.family<Task, int>((ref, taskId) {
-//   final repo = ref.watch(taskRepositoryProvider);
-  
-//   // We call the repository to get the specific stream for this ID
-//   return repo.getTaskById(taskId);
-// });
-
-
-/// The main stream that gets everything from the DB
-// final allTasksProvider = StreamProvider<List<Task>>((ref) {
-//   return ref
-//       .watch(taskRepositoryProvider)
-//       .watchTasks(
-//         sortBy: TaskSortOption.createdAtNewest,
-//         filterStatus: TaskStatus.completed,
-//       );
-// });
-
 // This keeps track of which segment the user is looking at
 final selectedSegmentProvider = StateProvider<TaskStatus>(
   (ref) => TaskStatus.todo,
@@ -113,36 +88,93 @@ final completedTasksProvider = StreamProvider<List<Task>>((ref) {
       );
 });
 
-
 ///
 /// 3. The Task Action Notifier
 /// Handles Create, Update, and Delete operations.
 ///
-final taskActionProvider = Provider((ref) => TaskActions(ref));
 
 ///
 /// The Provider
 ///
 
-final taskDraftProvider = StateProvider<TaskDraftState>(
-  (ref) => TaskDraftState(
-    title: '',
-    description: '',
-    deadline: DateTime.now().add(const Duration(hours: 1)),
-    taskType: TaskType.personal,
-    hasReminder: false,
-    taskStatus:TaskStatus.todo, 
-  ),
-);
+class TaskDraftNotifier extends StateNotifier<TaskDraftState> {
+  TaskDraftNotifier()
+    : super(
+        TaskDraftState(
+          title: '',
+          description: '',
+          deadline: DateTime.now().add(const Duration(hours: 1)),
+          taskType: TaskType.personal,
+          hasReminder: false,
+          taskStatus: TaskStatus.todo,
+          taskPriority: TaskPriority.moderate,
+        ),
+      );
+
+  void setFromTask(Task task) {
+    state = TaskDraftState(
+      title: task.title,
+      id: task.id,
+      createdAt: task.createdAt,
+      isSynced: task.isSynced,
+      description: task.description,
+      deadline: task.deadline,
+      taskType: task.taskType,
+      hasReminder: task.hasReminder,
+      taskStatus: task.status,
+      taskPriority: task.taskPriority,
+    );
+  }
+
+  void reset() {
+    state = TaskDraftState(
+      title: '',
+      description: '',
+      deadline: DateTime.now().add(const Duration(hours: 1)),
+      taskType: TaskType.personal,
+      hasReminder: false,
+      taskStatus: TaskStatus.todo,
+      taskPriority: TaskPriority.moderate,
+    );
+  }
+
+  void update(TaskDraftState Function(TaskDraftState) updater) {
+    state = updater(state);
+  }
+}
+
+
+
+
+final taskDraftProvider =
+    StateNotifierProvider<TaskDraftNotifier, TaskDraftState>(
+      (ref) => TaskDraftNotifier(),
+    );
+
+
+
+
+final taskDetailProvider = FutureProvider.family<Task?, int>((
+  ref,
+  taskId,
+) async {
+  final repo = ref.read(taskRepositoryProvider);
+
+  return repo.getTaskById(taskId);
+});
+
+
 
 ///
 ///action start here
 ///
+final taskActionProvider = Provider((ref) => TaskActions(ref));
 
 class TaskActions {
   final Ref _ref;
   TaskActions(this._ref);
   final formKey = GlobalKey<FormState>();
+
   Future<void> addTask(BuildContext context) async {
     if (formKey.currentState?.validate() != true) return;
     final repo = _ref.read(taskRepositoryProvider);
@@ -154,13 +186,39 @@ class TaskActions {
         status: draft.taskStatus,
         taskType: draft.taskType,
         description: Value(draft.description),
-        taskPriority: TaskPriority.modarate, 
+        taskPriority: draft.taskPriority,
         hasReminder: Value(draft.hasReminder),
         // lastModified: Value(DateTime.now()),
         createdAt: Value(DateTime.now()),
       ),
     );
-    formKey.currentState?.reset();
+
+    _ref.read(taskDraftProvider.notifier).reset();
+    if (context.mounted) {
+      Navigator.pop(context);
+    }
+  }
+
+  Future<void> updateTask(BuildContext context) async {
+    if (formKey.currentState?.validate() != true) return;
+    final repo = _ref.read(taskRepositoryProvider);
+    final draft = _ref.read(taskDraftProvider);
+    await repo.updateTask(
+      Task(
+        id: draft.id!,
+        createdAt: draft.createdAt!,
+        isSynced: draft.isSynced!,
+        lastModified: DateTime.now(),
+        title: draft.title,
+        description: draft.description,
+        deadline: draft.deadline,
+        status: draft.taskStatus,
+        taskType: draft.taskType,
+        hasReminder: draft.hasReminder,
+        taskPriority: draft.taskPriority,
+      ),
+    );
+    _ref.read(taskDraftProvider.notifier).reset();
     if (context.mounted) {
       Navigator.pop(context);
     }

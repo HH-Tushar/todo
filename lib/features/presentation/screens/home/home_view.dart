@@ -62,7 +62,15 @@ class HomeView extends ConsumerWidget {
                       // Only renders items as they enter the viewport
                       return CustomTaskCard(
                         task: tasks[index],
-                        onTap:()=>Navigator.push(context, MaterialPageRoute(builder: (_)=>TaskDetailsView(taskId:  tasks[index].id,))),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  TaskDetailsView(taskId: tasks[index].id),
+                            ),
+                          );
+                        },
                         onDelete: () => ref
                             .read(taskActionProvider)
                             .removeTask(tasks[index].id),
@@ -90,6 +98,7 @@ class HomeView extends ConsumerWidget {
 
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          ref.read(taskDraftProvider.notifier).reset();
           Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => AddTaskView()),
@@ -294,7 +303,11 @@ class _BentoCard extends StatelessWidget {
             Icon(icon, size: 32, color: Colors.black54),
             Text(
               title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18,color: Colors.black),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: Colors.black,
+              ),
             ),
             Text(
               '$taskCount Tasks',
