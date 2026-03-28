@@ -29,8 +29,6 @@ final searchTasksStreamProvider = StreamProvider<List<Task>>((ref) {
   );
 });
 
-
-
 // This keeps track of which segment the user is looking at
 final selectedSegmentProvider = StateProvider<TaskStatus>(
   (ref) => TaskStatus.todo,
@@ -97,156 +95,59 @@ final completedTasksProvider = StreamProvider<List<Task>>((ref) {
 /// The Provider
 ///
 
-class TaskDraftNotifier extends StateNotifier<TaskDraftState> {
-  TaskDraftNotifier()
-    : super(
-        TaskDraftState(
-          title: '',
-          description: '',
-          deadline: DateTime.now().add(const Duration(hours: 1)),
-          taskType: TaskType.personal,
-          hasReminder: false,
-          taskStatus: TaskStatus.todo,
-          taskPriority: TaskPriority.moderate,
-        ),
-      );
+class TaskDraftController extends StateNotifier<TaskDraftState> {
+  final Ref _ref;
 
-  void setFromTask(Task task) {
-    state = TaskDraftState(
-      title: task.title,
-      id: task.id,
-      createdAt: task.createdAt,
-      isSynced: task.isSynced,
-      description: task.description,
-      deadline: task.deadline,
-      taskType: task.taskType,
-      hasReminder: task.hasReminder,
-      taskStatus: task.status,
-      taskPriority: task.taskPriority,
-    );
+  TaskDraftController(this._ref) : super(TaskDraftState.initial());
+
+  // --- 1. Lifecycle Actions ---
+
+  /// Loads an existing task into the state. Use this before navigating to Edit Page.
+  Future<void> loadTask(int taskId) async {
+    final task = await _ref.read(taskRepositoryProvider).getTaskById(taskId);
+    if (task != null) {
+      state = TaskDraftState.fromTask(task);
+    }
   }
 
-  void reset() {
-    state = TaskDraftState(
-      title: '',
-      description: '',
-      deadline: DateTime.now().add(const Duration(hours: 1)),
-      taskType: TaskType.personal,
-      hasReminder: false,
-      taskStatus: TaskStatus.todo,
-      taskPriority: TaskPriority.moderate,
-    );
+  void reset() => state = TaskDraftState.initial();
+
+  // --- 2. Database Actions (Merged from TaskActions) ---
+
+  Future<void> save(BuildContext context) async {
+    final repo = _ref.read(taskRepositoryProvider);
+    state = state.copyWith(isLoading: true);
+    try {
+      if (state.isEditing) {
+        await repo.updateTask(state.daringToTask());
+      } else {
+        await repo.createTask(state.toCompanion());
+        reset();
+      }
+      state = state.copyWith(isLoading: false);
+      if (context.mounted) Navigator.pop(context);
+      // Always clear after a successful save
+      return;
+    } catch (e) {
+      return;
+    }
   }
+
+  Future<void> removeActiveTask(int id) async {
+    // if (state.id == null) return;
+    await _ref.read(taskRepositoryProvider).deleteTask(id);
+    // reset();
+  }
+
+  // --- 3. Field Updates ---
 
   void update(TaskDraftState Function(TaskDraftState) updater) {
     state = updater(state);
   }
 }
 
-
-
-
-final taskDraftProvider =
-    StateNotifierProvider<TaskDraftNotifier, TaskDraftState>(
-      (ref) => TaskDraftNotifier(),
-    );
-
-
-
-
-final taskDetailProvider = FutureProvider.family<Task?, int>((
-  ref,
-  taskId,
-) async {
-  final repo = ref.read(taskRepositoryProvider);
-
-  return repo.getTaskById(taskId);
-});
-
-
-
-///
-///action start here
-///
-final taskActionProvider = Provider((ref) => TaskActions(ref));
-
-class TaskActions {
-  final Ref _ref;
-  TaskActions(this._ref);
-  final formKey = GlobalKey<FormState>();
-
-  Future<void> addTask(BuildContext context) async {
-    if (formKey.currentState?.validate() != true) return;
-    final repo = _ref.read(taskRepositoryProvider);
-    final draft = _ref.read(taskDraftProvider);
-    await repo.createTask(
-      TasksCompanion.insert(
-        title: draft.title,
-        deadline: draft.deadline,
-        status: draft.taskStatus,
-        taskType: draft.taskType,
-        description: Value(draft.description),
-        taskPriority: draft.taskPriority,
-        hasReminder: Value(draft.hasReminder),
-        // lastModified: Value(DateTime.now()),
-        createdAt: Value(DateTime.now()),
-      ),
-    );
-
-    _ref.read(taskDraftProvider.notifier).reset();
-    if (context.mounted) {
-      Navigator.pop(context);
-    }
-  }
-
-  Future<void> updateTask(BuildContext context) async {
-    if (formKey.currentState?.validate() != true) return;
-    final repo = _ref.read(taskRepositoryProvider);
-    final draft = _ref.read(taskDraftProvider);
-    await repo.updateTask(
-      Task(
-        id: draft.id!,
-        createdAt: draft.createdAt!,
-        isSynced: draft.isSynced!,
-        lastModified: DateTime.now(),
-        title: draft.title,
-        description: draft.description,
-        deadline: draft.deadline,
-        status: draft.taskStatus,
-        taskType: draft.taskType,
-        hasReminder: draft.hasReminder,
-        taskPriority: draft.taskPriority,
-      ),
-    );
-    _ref.read(taskDraftProvider.notifier).reset();
-    if (context.mounted) {
-      Navigator.pop(context);
-    }
-  }
-
-  Future<void> toggleStatus(Task task) async {
-    final repo = _ref.read(taskRepositoryProvider);
-    final newStatus = task.status == TaskStatus.completed
-        ? TaskStatus.todo
-        : TaskStatus.completed;
-
-    await repo.updateTask(task.copyWith(status: newStatus));
-  }
-
-  Future<void> removeTask(int id) async {
-    await _ref.read(taskRepositoryProvider).deleteTask(id);
-  }
-
-  // Helper to update filters from the UI
-  void updateSearch(String query) {
-    _ref
-        .read(taskFilterProvider.notifier)
-        .update((s) => s.copyWith(searchQuery: query));
-  }
-
-  void updateSort(String sortBy) {
-    _ref
-        .read(taskFilterProvider.notifier)
-        .update((s) => s.copyWith(sortBy: sortBy));
-  }
-}
+// The Final Provider
+final taskDraftControllerProvider =
+    StateNotifierProvider<TaskDraftController, TaskDraftState>((ref) {
+      return TaskDraftController(ref);
+    });

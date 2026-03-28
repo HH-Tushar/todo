@@ -33,7 +33,7 @@ class SegmentedTaskView extends ConsumerWidget {
                 itemBuilder: (context, index) => CustomTaskCard(
                   task: tasks[index],
                   onDelete: () =>
-                      ref.read(taskActionProvider).removeTask(tasks[index].id),
+                      ref.read(taskDraftControllerProvider.notifier).removeActiveTask(tasks[index].id),
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(

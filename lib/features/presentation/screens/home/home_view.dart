@@ -72,8 +72,8 @@ class HomeView extends ConsumerWidget {
                           );
                         },
                         onDelete: () => ref
-                            .read(taskActionProvider)
-                            .removeTask(tasks[index].id),
+                            .read(taskDraftControllerProvider.notifier)
+                            .removeActiveTask(tasks[index].id),
                       );
                     }, childCount: tasks.length),
                   ),
@@ -98,7 +98,7 @@ class HomeView extends ConsumerWidget {
 
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          ref.read(taskDraftProvider.notifier).reset();
+          ref.read(taskDraftControllerProvider.notifier).reset();
           Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => AddTaskView()),

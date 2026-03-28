@@ -9,14 +9,14 @@ import '../providers/task_provider.dart';
 
 class AddTaskView extends ConsumerWidget {
   const AddTaskView({super.key});
-
+  static final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Watching the draft state to keep UI reactive
-    final draft = ref.watch(taskDraftProvider);
-    final draftController = ref.read(taskDraftProvider.notifier);
+    final draft = ref.watch(taskDraftControllerProvider);
+    final draftController = ref.read(taskDraftControllerProvider.notifier);
 
-    final taskController = ref.read(taskActionProvider);
+    // final taskController = ref.read(taskActionProvider);
     // Tactical Gold Accent from your Bento Grid
     const primaryGold = Color(0xFFE8F19A);
 
@@ -27,7 +27,7 @@ class AddTaskView extends ConsumerWidget {
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(horizontal: defaultPadding),
         child: Form(
-          key: taskController.formKey,
+          key: _formKey,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,9 +68,7 @@ class AddTaskView extends ConsumerWidget {
                 ),
 
                 onChanged: (value) {
-                  ref
-                      .read(taskDraftProvider.notifier)
-                      .update((s) => s.copyWith(title: value));
+                  draftController.update((s) => s.copyWith(title: value));
                 },
                 validator: CommonValidator.fieldRequired,
               ),
@@ -91,9 +89,7 @@ class AddTaskView extends ConsumerWidget {
                   filled: true,
                 ),
                 onChanged: (value) {
-                  ref
-                      .read(taskDraftProvider.notifier)
-                      .update((s) => s.copyWith(description: value));
+                  draftController.update((s) => s.copyWith(description: value));
                 },
                 validator: CommonValidator.fieldRequired,
               ),
@@ -270,9 +266,7 @@ class AddTaskView extends ConsumerWidget {
                 height: 55,
                 child: ElevatedButton(
                   onPressed: () async {
-                    draft.id != null
-                        ? await taskController.updateTask(context)
-                        : await taskController.addTask(context);
+                    await draftController.save(context);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryGold,
