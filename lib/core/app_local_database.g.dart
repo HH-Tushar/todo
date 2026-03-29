@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'task_model.dart';
+part of 'app_local_database.dart';
 
 // ignore_for_file: type=lint
 class $TasksTable extends Tasks with TableInfo<$TasksTable, Task> {

@@ -4,7 +4,7 @@ import 'package:task_today/features/common/colors.dart';
 import 'package:task_today/features/common/formater.dart';
 import 'package:utills/utills.dart';
 
-import '../../../../domain/models/task_model.dart';
+import '../../../../../core/app_local_database.dart';
 
 class CustomTaskCard extends StatelessWidget {
   final Task task;

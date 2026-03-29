@@ -1,7 +1,9 @@
 import 'package:drift/drift.dart';
 
-import '../../domain/models/task_model.dart';
-import '../../domain/models/task_status.dart';
+
+
+import '../../../core/app_local_database.dart';
+import '../../common/enums.dart';
 
 class LocalTaskDataSource {
   final AppDatabase _db;
@@ -13,6 +15,7 @@ class LocalTaskDataSource {
     TaskStatus? filterStatus,
     TaskSortOption sortOption = TaskSortOption.deadlineAsc, // Use Enum!
   }) {
+    
     final query = _db.select(_db.tasks);
 
     // CORRECT WAY: Combine filters using the & operator

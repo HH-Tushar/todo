@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:task_today/features/presentation/screens/add_task_view.dart';
 import 'package:task_today/features/presentation/screens/home/segmented_task_view.dart';
 
+import '../../../common/enums.dart';
 import '../../../domain/models/task_status.dart';
 import '../../providers/task_provider.dart';
 import '../task_details_view.dart';

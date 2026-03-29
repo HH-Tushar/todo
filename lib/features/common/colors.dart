@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import '../domain/models/task_status.dart';
+import 'enums.dart';
 
  const highPriority = Color(0xff8B0000);
  const baseBlack =  Color.fromARGB(255, 56, 56, 56);

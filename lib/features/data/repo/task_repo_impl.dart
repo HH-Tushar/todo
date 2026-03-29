@@ -1,5 +1,5 @@
-import '../../domain/models/task_model.dart';
-import '../../domain/models/task_status.dart';
+import '../../../core/app_local_database.dart';
+import '../../common/enums.dart';
 import '../../domain/repo/i_task_repo.dart';
 import '../datasource/local_task_datasource.dart';
 

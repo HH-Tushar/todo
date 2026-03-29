@@ -3,10 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
+import '../../../core/app_local_database.dart';
 import '../../../core/init.dart';
 
-import '../../domain/models/task_model.dart';
-import '../../domain/models/task_status.dart';
+import '../../common/enums.dart';
+
 
 part 'task_state.dart';
 

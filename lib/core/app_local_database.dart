@@ -1,14 +1,16 @@
+
 import 'dart:io';
+
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
-import '../../domain/models/task_status.dart';
+import 'package:path_provider/path_provider.dart';
+import '../features/common/enums.dart';
 
-part 'task_model.g.dart';
 
-// This class defines the table structure. 
-// Drift will generate a 'Task' class based on this.
+part 'app_local_database.g.dart';
+
+
 class Tasks extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get title => text().withLength(min: 1, max: 100)();
@@ -30,6 +32,7 @@ class Tasks extends Table {
 
 }
 
+
 @TableIndex(name: 'tasks_status_idx', columns: {#status})
 @TableIndex(name: 'tasks_priority_idx', columns: {#taskPriority})
 @TableIndex(name: 'tasks_deadline_idx', columns: {#deadline})
@@ -49,3 +52,6 @@ LazyDatabase _openConnection() {
     return NativeDatabase(file);
   });
 }
+
+
+
